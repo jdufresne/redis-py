@@ -33,6 +33,9 @@ from redis.exceptions import (
 )
 from redis.utils import HIREDIS_AVAILABLE
 
+if False:
+    from typing import Dict, Type
+
 try:
     import ssl
     ssl_available = True
@@ -41,7 +44,7 @@ except ImportError:
 
 NONBLOCKING_EXCEPTION_ERROR_NUMBERS = {
     BlockingIOError: errno.EWOULDBLOCK,
-}
+}  # type: Dict[Type[Exception], int]
 
 if ssl_available:
     if hasattr(ssl, 'SSLWantReadError'):
@@ -74,8 +77,9 @@ if HIREDIS_AVAILABLE:
         hiredis_version >= StrictVersion('1.0.0')
 
     if not HIREDIS_SUPPORTS_BYTE_BUFFER:
-        msg = ("redis-py works best with hiredis >= 0.1.4. You're running "
-               "hiredis %s. Please consider upgrading." % hiredis.__version__)
+        msg = nativestr("redis-py works best with hiredis >= 0.1.4. You're "
+                        "running hiredis %s. Please consider upgrading." %
+                        hiredis.__version__)
         warnings.warn(msg)
 
     HIREDIS_USE_BYTE_BUFFER = True
@@ -483,10 +487,7 @@ class HiredisParser(BaseParser):
         return response
 
 
-if HIREDIS_AVAILABLE:
-    DefaultParser = HiredisParser
-else:
-    DefaultParser = PythonParser
+DefaultParser = HiredisParser if HIREDIS_AVAILABLE else PythonParser
 
 
 class Connection(object):

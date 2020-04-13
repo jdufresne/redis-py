@@ -25,6 +25,10 @@ from redis.exceptions import (
     WatchError,
 )
 
+if False:
+    from typing import Callable, Dict, Iterable, Text, Union
+
+
 SYM_EMPTY = b''
 EMPTY_RESPONSE = 'EMPTY_RESPONSE'
 
@@ -58,10 +62,12 @@ def timestamp_to_datetime(response):
 
 
 def string_keys_to_dict(key_string, callback):
+    # type: (Text, Callable) -> Dict
     return dict.fromkeys(key_string.split(), callback)
 
 
 def dict_merge(*dicts):
+    # type: (*Dict) -> Dict
     merged = {}
     for d in dicts:
         merged.update(d)
@@ -231,20 +237,22 @@ def parse_sentinel_get_master(response):
 
 
 def nativestr_if_bytes(value):
+    # type (Any) -> str
     return nativestr(value) if isinstance(value, bytes) else value
 
 
 def pairs_to_dict(response, decode_keys=False, decode_string_values=False):
+    # type: (Union[bytes, Text], bool, bool) -> Dict
     "Create a dict given a list of key/value pairs"
     if response is None:
         return {}
     if decode_keys or decode_string_values:
         # the iter form is faster, but I don't know how to make that work
         # with a nativestr() map
-        keys = response[::2]
+        keys = response[::2]  # type: Iterable[Union[bytes, Text]]
         if decode_keys:
             keys = imap(nativestr, keys)
-        values = response[1::2]
+        values = response[1::2]  # type: Iterable[Union[bytes, Text]]
         if decode_string_values:
             values = imap(nativestr_if_bytes, values)
         return dict(izip(keys, values))
@@ -548,7 +556,7 @@ class Redis(object):
         string_keys_to_dict(
             # these return OK, or int if redis-server is >=1.3.4
             'LPUSH RPUSH',
-            lambda r: isinstance(r, (long, int)) and r or nativestr(r) == 'OK'
+            lambda r: r if isinstance(r, (long, int)) else nativestr(r) == 'OK'
         ),
         string_keys_to_dict('SORT', sort_return_tuples),
         string_keys_to_dict('ZSCORE ZINCRBY GEODIST', float_or_none),
@@ -3916,8 +3924,8 @@ class Pipeline(Redis):
             raise WatchError("Watched variable changed.")
 
         # put any parse errors into the response
-        for i, e in errors:
-            response.insert(i, e)
+        for i, exc in errors:
+            response.insert(i, exc)
 
         if len(response) != len(commands):
             self.connection.disconnect()

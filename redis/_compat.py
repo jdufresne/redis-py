@@ -3,6 +3,9 @@ import errno
 import socket
 import sys
 
+if False:
+    from typing import Callable, Text, Union
+
 
 def sendall(sock, *args, **kwargs):
     return sock.sendall(*args, **kwargs)
@@ -82,7 +85,7 @@ if sys.version_info[0] < 3:
     try:
         from ssl import SSLError as _SSLError
     except ImportError:
-        class _SSLError(Exception):
+        class _SSLError(Exception):  # type: ignore
             """A replacement in case ssl.SSLError is not available."""
             pass
 
@@ -93,6 +96,7 @@ if sys.version_info[0] < 3:
     )
 
     def _handle_ssl_timeout(func):
+        # type: (Callable) -> Callable
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             try:
@@ -138,6 +142,7 @@ if sys.version_info[0] < 3:
         return x.itervalues()
 
     def nativestr(x):
+        # type: (Union[bytes, Text]) -> str
         return x if isinstance(x, str) else x.encode('utf-8', 'replace')
 
     def next(x):
