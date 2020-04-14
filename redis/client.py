@@ -26,7 +26,7 @@ from redis.exceptions import (
 )
 
 if False:
-    from typing import Callable, Dict, Iterable, Text, Union
+    from typing import Callable, Iterable, Text, Union
 
 
 SYM_EMPTY = b''
@@ -62,12 +62,12 @@ def timestamp_to_datetime(response):
 
 
 def string_keys_to_dict(key_string, callback):
-    # type: (Text, Callable) -> Dict
+    # type: (Text, Callable) -> dict
     return dict.fromkeys(key_string.split(), callback)
 
 
 def dict_merge(*dicts):
-    # type: (*Dict) -> Dict
+    # type: (*dict) -> dict
     merged = {}
     for d in dicts:
         merged.update(d)
@@ -242,7 +242,7 @@ def nativestr_if_bytes(value):
 
 
 def pairs_to_dict(response, decode_keys=False, decode_string_values=False):
-    # type: (Union[bytes, Text], bool, bool) -> Dict
+    # type: (Union[bytes, Text], bool, bool) -> dict
     "Create a dict given a list of key/value pairs"
     if response is None:
         return {}

@@ -4,18 +4,22 @@ import socket
 import sys
 
 if False:
-    from typing import Callable, Text, Union
+    import ssl
+    from typing import Any, Callable, Text, Union
 
 
 def sendall(sock, *args, **kwargs):
+    # type: (socket.socket, *Any, **Any) -> None
     return sock.sendall(*args, **kwargs)
 
 
 def shutdown(sock, *args, **kwargs):
+    # type: (socket.socket, *Any, **Any) -> None
     return sock.shutdown(*args, **kwargs)
 
 
 def ssl_wrap_socket(context, sock, *args, **kwargs):
+    # type: (ssl.SSLContext, socket.socket, *Any, **Any) -> ssl.SSLSocket
     return context.wrap_socket(sock, *args, **kwargs)
 
 

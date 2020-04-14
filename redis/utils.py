@@ -1,5 +1,8 @@
 from contextlib import contextmanager
 
+if False:
+    from typing import Any, Optional, Text
+
 
 try:
     import hiredis
@@ -9,6 +12,7 @@ except ImportError:
 
 
 def from_url(url, db=None, **kwargs):
+    # type: (Text, Optional[int], **Any) -> 'Redis'
     """
     Returns an active Redis client generated from the given database URL.
 
